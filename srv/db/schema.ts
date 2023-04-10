@@ -202,6 +202,10 @@ export namespace AppSchema {
     memoryContextLimit?: number
     memoryReverseWeight?: boolean
     src?: string
+
+    images?: {
+      adapter: string
+    }
   }
 
   export interface AppConfig {
@@ -209,6 +213,7 @@ export namespace AppSchema {
     version: string
     canAuth: boolean
     assetPrefix: string
+    selfhosting: boolean
   }
 
   export interface MemoryBook {
