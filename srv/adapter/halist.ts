@@ -20,16 +20,10 @@ export const handleHalist: ModelAdapter = async function* ({
     yield { error: 'Halist API not set' }
     return
   }
-
-  const apiKey = `Basic ${guest ? user.halistApiKey : decryptText(user.halistApiKey)}`
-  const cookieSession = `Basic ${guest ? user.halistCookies : decryptText(user.halistCookies)}`
+  const apiKey = `${guest ? user.halistApiKey : decryptText(user.halistApiKey)}`
   const headers = {
-    accept: '*/*',
-    'accept-language': 'en-US,en;q=0.9',
-    'content-type': 'application/json',
-    origin: 'https://halist.ai/api/v1/chat',
     Authorization: `Bearer ${apiKey}`,
-    Cookie: `session=${cookieSession}`,
+    'content-type': 'application/json',
   }
   const encoder = getEncoder('openai', 'gpt-4')
   const gaslightTokens = encoder(parts.gaslight)
@@ -46,27 +40,21 @@ export const handleHalist: ModelAdapter = async function* ({
     return
   }
 
-  const promptString = buildPromptString({
+  const ctxAndQuery = buildPromptCtxAndQuery({
     encoder,
     lines,
     log,
     tokenBudget,
+    gaslight: parts.gaslight,
+    charname: char.name,
   })
 
   try {
-    const payload = {
-      context: [],
-      query: promptString,
-    }
-    log.info({ payload }, 'Halist: sending payload to embedbase')
     const chatResponse = await needle(
       'post',
       'https://halist.ai/api/v1/chat',
-      JSON.stringify(payload),
-      {
-        headers,
-        json: true,
-      }
+      JSON.stringify({ ...ctxAndQuery, title: '' }),
+      { headers, json: true }
     )
     assertOk(chatResponse, 'Halist API call failed')
     // Response is just straight text
@@ -86,27 +74,52 @@ function assertOk(response: NeedleResponse, message: string) {
   }
 }
 
-function buildPromptString({
+type CtxMsg = {
+  committed: number
+  content: string
+  conversationId: number
+  from: 'AI' | 'You'
+  id: number
+}
+
+const mkCtxMsg = (from: 'AI' | 'You', content: string) => ({
+  committed: 1,
+  content,
+  conversationId: 1,
+  from,
+  id: 1,
+})
+
+function buildPromptCtxAndQuery({
   log,
   lines,
   encoder,
   tokenBudget,
+  gaslight,
+  charname,
 }: {
   log: AppLog
   lines: string[]
   encoder: Encoder
   tokenBudget: number
-}) {
-  let tokens = tokenBudget
-  const prompt = []
+  gaslight: string
+  charname: string
+}): { query: string; context: CtxMsg[] } {
+  let budget = tokenBudget - encoder(gaslight)
+  const ctx: CtxMsg[] = []
 
-  for (const line of lines) {
-    const length = encoder(line + `\n`)
-    if (tokens < length) break
-    tokens -= length
-    prompt.push(line)
+  for (const line of [...lines].reverse().slice(1)) {
+    budget -= encoder(line + `\n`)
+    if (budget <= 0) break
+    const isBot = line.startsWith(charname)
+    const msgContent = line.split(':')[1] ?? line
+    ctx.push(mkCtxMsg(isBot ? 'AI' : 'You', msgContent))
   }
+  ctx.push(mkCtxMsg('AI', gaslight))
+  ctx.reverse()
+  const queryLine = lines[lines.length - 1]
+  const query = queryLine?.split(':')?.[1] ?? queryLine
 
-  log.info({ unusedTokens: tokens }, 'Halist: Finished building prompt')
-  return prompt.join('\n')
+  log.info({ unusedTokens: budget }, 'Halist: Finished building prompt')
+  return { context: ctx, query }
 }

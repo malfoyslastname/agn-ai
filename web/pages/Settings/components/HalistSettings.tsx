@@ -17,20 +17,8 @@ const HalistSettings: Component = () => {
         type="password"
         value={state.user?.halistApiKey}
       />
-      <Button schema="red" class="w-max" onClick={() => userStore.deleteKey('scale')}>
-        Delete Scale API Key
-      </Button>
-      <TextInput
-        fieldName="halistCookies"
-        label="Halist API cookies"
-        placeholder={
-          state.user?.halistCookiesSet ? 'Halist API cookies are set' : 'E.g. blahblahblah'
-        }
-        type="password"
-        value={state.user?.halistCookies}
-      />
-      <Button schema="red" class="w-max" onClick={() => userStore.deleteHalistCookies('halist')}>
-        Delete Halist API cookies
+      <Button schema="red" class="w-max" onClick={() => userStore.deleteKey('halist')}>
+        Delete Halist API Key
       </Button>
     </>
   )
