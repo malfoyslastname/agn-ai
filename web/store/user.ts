@@ -1,3 +1,4 @@
+import { deleteHalistCookies } from '../../srv/api/user/settings'
 import { AppSchema } from '../../srv/db/schema'
 import { FileInputResult } from '../shared/FileInput'
 import { api, clearAuth, getAuth, setAuth } from './api'
@@ -196,7 +197,7 @@ export const userStore = createStore<UserState>(
       return { background: file.content }
     },
 
-    async deleteKey({ user }, kind: 'novel' | 'horde' | 'openai' | 'scale' | 'claude') {
+    async deleteKey({ user }, kind: 'novel' | 'horde' | 'openai' | 'scale' | 'claude' | 'halist') {
       const res = await data.user.deleteApiKey(kind)
       if (res.error) return toastStore.error(`Failed to update settings: ${res.error}`)
 
@@ -211,6 +212,20 @@ export const userStore = createStore<UserState>(
 
       if (kind === 'claude') {
         return { user: { ...user, claudeApiKey: '', claudeApiKeySet: false } }
+      }
+
+      if (kind === 'halist') {
+        return { user: { ...user, halistApiKey: '', halistApiKeySet: false } }
+      }
+    },
+
+    async deleteHalistCookies({ user }, kind: 'halist') {
+      const res = await data.user.deleteHalistCookies(kind)
+      if (res.error) return toastStore.error(`Failed to update settings: ${res.error}`)
+
+      if (!user) return
+      if (kind === 'halist') {
+        return { user: { ...user, halistCookies: '', halistCookiesSet: false } }
       }
     },
 

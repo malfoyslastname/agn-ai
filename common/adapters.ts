@@ -42,6 +42,7 @@ export const AI_ADAPTERS = [
   'openai',
   'scale',
   'claude',
+  'halist',
 ] as const
 export const CHAT_ADAPTERS = ['default', ...AI_ADAPTERS] as const
 
@@ -122,4 +123,5 @@ export const ADAPTER_LABELS: Record<AIAdapter, string> = {
   openai: 'OpenAI',
   scale: 'Scale',
   claude: 'Claude',
+  halist: 'Halist',
 }

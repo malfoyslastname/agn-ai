@@ -13,6 +13,7 @@ import LuminAISettings from './components/LuminAISettings'
 import KoboldAISettings from './components/KoboldAISettings'
 import ChaiSettings from './components/ChaiSettings'
 import ClaudeSettings from './components/ClaudeSettings'
+import HalistSettings from './components/HalistSettings'
 
 const AISettings: Component<{
   onHordeWorkersChange: (workers: string[]) => void
@@ -97,6 +98,11 @@ const AISettings: Component<{
       <div class={currentTab() === 'claude' ? tabClass : 'hidden'}>
         <AIPreset adapter="claude" />
         <ClaudeSettings />
+      </div>
+
+      <div class={currentTab() === 'halist' ? tabClass : 'hidden'}>
+        <AIPreset adapter="halist" />
+        <HalistSettings />
       </div>
     </>
   )

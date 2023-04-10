@@ -9,6 +9,8 @@ import {
   deleteOaiKey,
   deleteScaleKey,
   deleteClaudeKey,
+  deleteHalistKey,
+  deleteHalistCookies,
   getConfig,
   getInitialLoad,
   getProfile,
@@ -31,6 +33,8 @@ router.delete('/config/horde', loggedIn, deleteHordeKey)
 router.delete('/config/novel', loggedIn, deleteNovelKey)
 router.delete('/config/openai', loggedIn, deleteOaiKey)
 router.delete('/config/claude', loggedIn, deleteClaudeKey)
+router.delete('/config/halist', loggedIn, deleteHalistKey)
+router.delete('/config/halist-cookies', loggedIn, deleteHalistCookies)
 router.delete('/presets/:id', loggedIn, deleteUserPreset)
 router.post('/password', loggedIn, changePassword)
 router.post('/config', loggedIn, updateConfig)

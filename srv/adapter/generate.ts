@@ -21,6 +21,7 @@ import { handleClaude } from './claude'
 import { GenerateRequestV2, ModelAdapter } from './type'
 import { createPromptWithParts, getAdapter } from '../../common/prompt'
 import { handleScale } from './scale'
+import { handleHalist } from './halist'
 import { getMemoryPrompt } from '../../common/memory'
 
 const handlers: { [key in AIAdapter]: ModelAdapter } = {
@@ -33,6 +34,7 @@ const handlers: { [key in AIAdapter]: ModelAdapter } = {
   openai: handleOAI,
   scale: handleScale,
   claude: handleClaude,
+  halist: handleHalist,
 }
 
 export async function createTextStreamV2(

@@ -51,6 +51,22 @@ export const deleteClaudeKey = handle(async ({ userId }) => {
   return { success: true }
 })
 
+export const deleteHalistKey = handle(async ({ userId }) => {
+  await store.users.updateUser(userId!, {
+    halistApiKey: '',
+  })
+
+  return { success: true }
+})
+
+export const deleteHalistCookies = handle(async ({ userId }) => {
+  await store.users.updateUser(userId!, {
+    halistCookies: '',
+  })
+
+  return { success: true }
+})
+
 export const deleteHordeKey = handle(async ({ userId }) => {
   await store.users.updateUser(userId!, {
     hordeKey: '',
@@ -95,6 +111,8 @@ export const updateConfig = handle(async ({ userId, body }) => {
       scaleUrl: 'string?',
       scaleApiKey: 'string?',
       claudeApiKey: 'string?',
+      halistApiKey: 'string?',
+      halistCookies: 'string?',
     },
     body
   )
@@ -164,6 +182,14 @@ export const updateConfig = handle(async ({ userId, body }) => {
 
   if (body.claudeApiKey) {
     update.claudeApiKey = encryptText(body.claudeApiKey)
+  }
+
+  if (body.halistApiKey) {
+    update.halistApiKey = encryptText(body.halistApiKey)
+  }
+
+  if (body.halistCookies) {
+    update.halistCookies = encryptText(body.halistCookies)
   }
 
   await store.users.updateUser(userId!, update)
@@ -245,6 +271,16 @@ async function getSafeUserConfig(userId: string) {
     if (user.scaleApiKey) {
       user.scaleApiKeySet = true
       user.scaleApiKey = ''
+    }
+
+    if (user.halistApiKey) {
+      user.halistApiKeySet = true
+      user.halistApiKey = ''
+    }
+
+    if (user.halistCookies) {
+      user.halistCookiesSet = true
+      user.halistCookies = ''
     }
 
     if (user.claudeApiKey) {

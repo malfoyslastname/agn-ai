@@ -231,6 +231,23 @@ export const serviceGenMap: Record<Exclude<ChatAdapter, 'default'>, GenMap> = {
     gaslight: '',
     oaiModel: '',
   },
+  halist: {
+    maxTokens: '',
+    repetitionPenalty: '',
+    repetitionPenaltyRange: '',
+    repetitionPenaltySlope: '',
+    tailFreeSampling: '',
+    temp: 'temperature',
+    topK: '',
+    topP: '',
+    typicalP: '',
+    topA: '',
+    order: '',
+    frequencyPenalty: '',
+    presencePenalty: '',
+    gaslight: 'gaslight',
+    oaiModel: '',
+  },
 }
 
 export function isDefaultPreset(value?: string): value is GenerationPreset {
@@ -258,6 +275,9 @@ export function getFallbackPreset(adapter: AIAdapter) {
 
     case 'claude':
       return defaultPresets.claude
+
+    case 'halist':
+      return defaultPresets.halist
 
     default:
       throw new Error(`Unknown adapter: ${adapter}`)

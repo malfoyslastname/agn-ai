@@ -67,6 +67,21 @@ export async function getConfig() {
   return api.get<AppSchema.User>('/user/config')
 }
 
+export async function deleteHalistCookies(kind: string) {
+  if (isLoggedIn()) {
+    const res = await api.method('delete', `/user/config/${kind}`)
+    return res
+  }
+
+  const user = local.loadItem('config')
+  if (kind === 'halist') {
+    user.halistCookies = ''
+  }
+
+  local.saveConfig(user)
+  return local.result({ success: true })
+}
+
 export async function deleteApiKey(kind: string) {
   if (isLoggedIn()) {
     const res = await api.method('delete', `/user/config/${kind}`)
@@ -95,6 +110,10 @@ export async function deleteApiKey(kind: string) {
 
   if (kind === 'claude') {
     user.claudeApiKey = ''
+  }
+
+  if (kind === 'halist') {
+    user.halistApiKey = ''
   }
 
   local.saveConfig(user)

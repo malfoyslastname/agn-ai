@@ -480,6 +480,9 @@ function getContextLimit(
     case 'claude':
       return configuredMax - genAmount
 
+    case 'halist':
+      return configuredMax - genAmount
+
     default:
       throw new Error(`Unknown adapter: ${adapter}`)
   }

@@ -51,6 +51,11 @@ export namespace AppSchema {
     claudeApiKey?: string
     claudeApiKeySet?: boolean
 
+    halistApiKey?: string
+    halistApiKeySet?: boolean
+    halistCookies?: string
+    halistCookiesSet?: boolean
+
     defaultAdapter: AIAdapter
     defaultPresets?: { [key in AIAdapter]?: string }
 

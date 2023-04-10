@@ -45,6 +45,8 @@ const Settings: Component = () => {
       oaiKey: 'string?',
       scaleApiKey: 'string?',
       scaleUrl: 'string?',
+      halistApiKey: 'string?',
+      halistCookies: 'string?',
       claudeApiKey: 'string?',
       defaultAdapter: adapterOptions,
     } as const)
