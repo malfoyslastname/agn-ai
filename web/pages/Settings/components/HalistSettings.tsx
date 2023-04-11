@@ -11,9 +11,7 @@ const HalistSettings: Component = () => {
       <TextInput
         fieldName="halistApiKey"
         label="Halist API key"
-        placeholder={
-          state.user?.halistApiKeySet ? 'Halist API key is set' : 'E.g. blahblahblah'
-        }
+        placeholder={state.user?.halistApiKeySet ? 'Halist API key is set' : 'E.g. blahblahblah'}
         type="password"
         value={state.user?.halistApiKey}
       />
