@@ -188,7 +188,7 @@ const PromptSettings: Component<Props> = (props) => {
 
       <TextInput
         fieldName="ultimeJailbreak"
-        label="UJB Prompt (GPT-4 / Turbo / Claude)"
+        label="UJB Prompt (GPT-4 / Turbo / Claude / Halist)"
         helperText={
           <>
             (Leave empty to disable)

@@ -4,6 +4,7 @@ import { sanitise, trimResponseV2 } from '../api/chat/common'
 import { ModelAdapter } from './type'
 import { AppLog } from '../logger'
 import { Encoder, getEncoder } from '../../common/tokenize'
+import { BOT_REPLACE, SELF_REPLACE } from '../../common/prompt'
 
 export const handleHalist: ModelAdapter = async function* ({
   char,
@@ -15,6 +16,7 @@ export const handleHalist: ModelAdapter = async function* ({
   log,
   settings,
   gen,
+  sender,
 }) {
   if (!user.halistApiKey) {
     yield { error: 'Halist API not set' }
@@ -40,6 +42,9 @@ export const handleHalist: ModelAdapter = async function* ({
     return
   }
 
+  const username = sender.handle || 'You'
+  const ujb = gen.ultimeJailbreak?.replace(BOT_REPLACE, char.name)?.replace(SELF_REPLACE, username)
+
   const ctxAndQuery = buildPromptCtxAndQuery({
     encoder,
     lines,
@@ -47,6 +52,7 @@ export const handleHalist: ModelAdapter = async function* ({
     tokenBudget,
     gaslight: parts.gaslight,
     charname: char.name,
+    ujb,
   })
 
   try {
@@ -97,6 +103,7 @@ function buildPromptCtxAndQuery({
   tokenBudget,
   gaslight,
   charname,
+  ujb,
 }: {
   log: AppLog
   lines: string[]
@@ -104,11 +111,15 @@ function buildPromptCtxAndQuery({
   tokenBudget: number
   gaslight: string
   charname: string
+  ujb?: string
 }): { query: string; context: CtxMsg[] } {
-  let budget = tokenBudget - encoder(gaslight)
-  const ctx: CtxMsg[] = []
+  const ujbCost = ujb ? encoder(ujb) + 20 : 0
+  let budget = tokenBudget - encoder(gaslight) - ujbCost
+  const linesNewestFirstExceptLatest = [...lines].reverse().slice(1)
 
-  for (const line of [...lines].reverse().slice(1)) {
+  // Building the context (every message except the user's latest)
+  const ctx: CtxMsg[] = []
+  for (const line of linesNewestFirstExceptLatest) {
     budget -= encoder(line + `\n`)
     if (budget <= 0) break
     const isBot = line.startsWith(charname)
@@ -117,6 +128,10 @@ function buildPromptCtxAndQuery({
   }
   ctx.push(mkCtxMsg('AI', gaslight))
   ctx.reverse()
+  if (ujb) {
+    ctx.push(mkCtxMsg('AI', ujb))
+  }
+
   const queryLine = lines[lines.length - 1]
   const query = queryLine?.split(':')?.[1] ?? queryLine
 
